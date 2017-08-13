@@ -3,11 +3,33 @@
 
 import pygame
 import player
+import entities
 
 WIDTH = 800
-HEIGHT = 600
+HEIGHT = 640
 DISPLAY = (WIDTH, HEIGHT)
 BG_COLOR = '#323232'
+LEVEL = ['-------------------------',
+         '-                       -',
+         '-                       -',
+         '-                       -',
+         '-                       -',
+         '-                       -',
+         '-                       -',
+         '-                       -',
+         '-                       -',
+         '-                       -',
+         '-                       -',
+         '-                       -',
+         '-                       -',
+         '-                       -',
+         '-                       -',
+         '-                       -',
+         '-                       -',
+         '-                       -',
+         '-                       -',
+         '-------------------------']
+
 
 def main():
     pygame.init() # Инициация PyGame, обязательная строчка
@@ -16,12 +38,18 @@ def main():
     bg = pygame.Surface(DISPLAY) # Создание видимой поверхности
                                          # будем использовать как фон
     bg.fill(pygame.Color(BG_COLOR))     # Заливаем поверхность сплошным цветом
+
     timer = pygame.time.Clock()
     hero = player.Player(55, 55)
     left=right=up=down = False
 
+    entities_group = pygame.sprite.Group()
+    blocks = []
+    entities_group.add(hero)
+
     while 1: # Основной цикл программы
         timer.tick(60)
+
         for event in pygame.event.get(): # Обрабатываем события
             if event.type == pygame.QUIT:
                 raise SystemExit
@@ -43,8 +71,21 @@ def main():
                 right = False
 
         screen.blit(bg, (0,0))      # Каждую итерацию необходимо всё перерисовывать
+
+        x = y = 0
+        for row in LEVEL:
+            for col in row:
+                if col == '-':
+                    block = entities.Block(x, y)
+                    entities_group.add(block)
+                    blocks.append(block)
+                x += block.width
+            y += block.height
+            x = 0
+
         hero.update(left, right, up, down)
-        hero.draw(screen)
+        entities_group.draw(screen)
+
         pygame.display.update()     # обновление и вывод всех изменений на экран
 
 
